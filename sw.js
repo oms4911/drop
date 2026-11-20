@@ -1,0 +1,6 @@
+// Offline shell for the installed app: cache the page, scripts, icons and three.js; large media streams from the network.
+const V='drop-v2',CORE=['./','index.html','manifest.webmanifest','icons/icon-180.png','icons/icon-192.png','icons/icon-512.png','media/manifest.json','media/game-poster.jpg',"js/audio.js","js/battle.js","js/char.js","js/chat.js","js/core.js","js/fpv.js","js/gallery.js","js/game.js","js/items.js","js/media.js","js/meter.js","js/themes.js","js/ui.js","js/under.js","js/world.js","js/zones.js",'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==V).map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET'||r.headers.has('range'))return;const u=new URL(r.url);if(/\.(mp4|mp3)$/i.test(u.pathname))return;
+e.respondWith(caches.open(V).then(c=>c.match(r).then(hit=>{const net=fetch(r).then(res=>{if(res&&(res.ok||res.type==='opaque'))c.put(r,res.clone());return res}).catch(()=>hit);return hit||net})))});
