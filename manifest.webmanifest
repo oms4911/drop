@@ -1,2 +1,2 @@
 {"name":"drop · OH MINSEO","short_name":"drop","description":"오민서 사운드·영상 포트폴리오 — 3D 연못 월드와 지하 도트 허브","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#ffffff","theme_color":"#ffffff","lang":"ko",
-"icons":[{"src":"icons/drop-192.png","sizes":"192x192","type":"image/png"},{"src":"icons/drop-512.png","sizes":"512x512","type":"image/png"},{"src":"icons/drop-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]}
+"icons":[{"src":"icons/dropw-192.png","sizes":"192x192","type":"image/png"},{"src":"icons/dropw-512.png","sizes":"512x512","type":"image/png"},{"src":"icons/dropw-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]}
