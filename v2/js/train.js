@@ -42,7 +42,7 @@ const GAMES=[
 {id:'comp',name:'SQUEEZE A/B',cat:'DYN',ko:'BS.1770 라우드니스를 맞춘 두 소리 중 압축된 쪽을 골라요',icon:'M2 30 L22 10 L46 4',
  build(lv){const ans=Math.random()<.5?0:1,gr=[9,6,4][lv-1],ra=[8,4,3][lv-1];
  return{q:'라우드니스는 같아요. 컴프레서가 걸린 쪽은?',opts:['A','B'],ans,kind:'ab',match:true,comp:{gr,ra},wire(ac,inp,a,b,N){const c=ac.createDynamicsCompressor();c.threshold.value=-30;c.ratio.value=ra;c.knee.value=0;c.attack.value=.01;c.release.value=.1;N.push(c);this.cn=c;inp.connect(c);c.connect(ans?b:a);inp.connect(ans?a:b)},
- get reveal(){const m=this.grn?this.grs/this.grn:0;return(ans?'B':'A')+' · 목표 GR '+gr+' dB / '+ra+':1 · 실측 평균 GR '+m.toFixed(1)+' dB · 하드 니 · 어택 10 ms · 릴리스 100 ms'}}}},
+ get reveal(){const m=this.grn?this.grs/this.grn:(this.gs||0);return(ans?'B':'A')+' · 목표 GR '+gr+' dB / '+ra+':1 · '+(this.grn>30?'실측 평균 GR ':'실측 GR(측정 시작) ')+m.toFixed(1)+' dB · 하드 니 · 어택 10 ms · 릴리스 100 ms'}}}},
 {id:'pan',name:'PAN SPOT',cat:'SPC',ko:'소리의 좌우 위치를 맞혀요',icon:'M4 16 H44 M24 10 V22 M10 16 m-3 0 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0',
  build(lv){const P=[[-1,-.5,0,.5,1],[-1,-.66,-.33,0,.33,.66,1],[-1,-.75,-.5,-.25,0,.25,.5,.75,1]][lv-1],lab=v=>v===0?'C':(v<0?'L':'R')+Math.round(Math.abs(v)*100),ans=Math.random()*P.length|0;
  return{q:'A는 가운데예요. B의 좌우 위치는?',opts:P.map(lab),ans,kind:'id',wire(ac,inp,a,b,N){const m=ac.createGain();m.channelCount=1;m.channelCountMode='explicit';m.channelInterpretation='speakers';const p=ac.createStereoPanner();p.pan.value=P[ans];N.push(m,p);inp.connect(m);m.connect(a);m.connect(p);p.connect(b)},reveal:lab(P[ans])}}},
