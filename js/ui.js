@@ -11,6 +11,7 @@ P[0]=`<div class="apphead"><span class="mono">PROFILE</span><b>CORE COMPETENCIES
 P[1]=`<div class="apphead"><span class="mono">GAME</span><b>DIABLO</b></div>
 <div class="box wide app"><div class="vslot" data-vslot="game"></div></div>
 <div class="box wide app"><h2>Mixer · AMBIENT MUSIC FX</h2>${mixer([4,5,6])}</div>
+<div class="box wide app lgbox" data-logicbox><h2>Logic Pro Session · 디아블로</h2><p class="mono lgnote">게임 영상과 같이 재생돼요 · 소리는 위 영상에서</p></div>
 <details class="notes"><summary>PROJECT NOTES</summary><p>음악은 Logic Pro X로 직접 제작했고, FX와 Ambient 사운드는 Splice를 통해 직접 작업했습니다. 믹서에서 각 레이어를 조절해 장면의 분위기를 바꿔 볼 수 있습니다.</p></details>`;
 P[2]=`<div class="apphead"><span class="mono">MOCK UP</span><b>GENERATIVE PRODUCTION</b></div>
 <div class="seg" role="tablist">${[['video','MAIN'],['show1',"PACHELBEL'S CANON"]].map(([id,n],i)=>`<button role="tab" data-vtab="${id}" aria-selected="${i==0}">${n}</button>`).join('')}</div>
