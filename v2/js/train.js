@@ -24,14 +24,14 @@ const eqGame=(freqs,gainOf,Q,q)=>lv=>{const fs=typeof freqs==='function'?freqs(l
 return{q,opts:fs.map(fk),ans,kind:'id',wire(ac,inp,a,b,N){inp.connect(a);const f=bq(ac,'peaking',fs[ans],gn,Q);N.push(f);inp.connect(f);f.connect(b);this.curve=[f]},reveal:fk(fs[ans])+' '+sgn(gn)+' dB · Q '+Q}};
 const GAMES=[
 {id:'peak',name:'PEAK HUNT',cat:'EQ',ko:'부스트된 주파수 대역을 찾아요 (ISO 266 중심 주파수)',icon:'M2 26 H16 C20 26 21 6 24 6 C27 6 28 26 32 26 H46',
- build:eqGame(lv=>lv<3?OCT:THIRD,lv=>[12,9,6][lv-1],1.4,'B에서 부스트된 주파수는?')},
+ build:eqGame(lv=>lv<3?OCT:THIRD,lv=>[18,15,12][lv-1],1.4,'B에서 부스트된 주파수는?')},
 {id:'cut',name:'CUT FINDER',cat:'EQ',ko:'깎여 나간 주파수 대역을 찾아요',icon:'M2 6 H16 C20 6 21 26 24 26 C27 26 28 6 32 6 H46',
- build:eqGame(OCT,lv=>[-15,-12,-9][lv-1],1.6,'B에서 깎인 주파수는?')},
+ build:eqGame(OCT,lv=>[-30,-24,-18][lv-1],1.6,'B에서 깎인 주파수는?')},
 {id:'bass',name:'LOW END',cat:'EQ',ko:'50–400 Hz 저역 부스트를 찾아요 (1/3 옥타브)',icon:'M2 8 C8 8 10 26 18 26 H46',
- build:eqGame(lv=>lv<2?[50,100,200,400]:[50,80,125,200,315,400],lv=>[12,9,7][lv-1],1.8,'B에서 부스트된 저역 주파수는?')},
+ build:eqGame(lv=>lv<2?[50,100,200,400]:[50,80,125,200,315,400],lv=>[18,15,12][lv-1],1.8,'B에서 부스트된 저역 주파수는?')},
 {id:'filter',name:'FILTER ID',cat:'EQ',ko:'어떤 필터가 걸렸는지 맞혀요',icon:'M2 10 H24 C32 10 34 26 46 30',
  build(lv){const T=lv<2?[['lowpass','LOW-PASS'],['highpass','HIGH-PASS'],['bandpass','BAND-PASS'],['notch','NOTCH']]:[['lowpass','LOW-PASS'],['highpass','HIGH-PASS'],['bandpass','BAND-PASS'],['notch','NOTCH'],['lowshelf','LOW SHELF'],['highshelf','HIGH SHELF']];
- const ans=Math.random()*T.length|0,f=pick([500,630,800,1000,1250,1600,2000,2500,3150]),sh=[12,9,6][lv-1],t=T[ans][0];
+ const ans=Math.random()*T.length|0,f=pick([500,630,800,1000,1250,1600,2000,2500,3150]),sh=[18,15,12][lv-1],t=T[ans][0];
  return{q:'B에 걸린 필터 종류는?',opts:T.map(x=>x[1]),ans,kind:'id',wire(ac,inp,a,b,N){inp.connect(a);const n=bq(ac,t,f,/shelf/.test(t)?sh:null,t==='bandpass'?.9:t==='notch'?1.2:.8);N.push(n);inp.connect(n);n.connect(b);this.curve=[n]},reveal:T[ans][1]+' @ '+fk(f)}}},
 {id:'level',name:'DB STEP',cat:'DYN',ko:'볼륨이 몇 dB 바뀌었는지 맞혀요',icon:'M2 26 H14 V18 H26 V10 H38 V4 H46',
  build(lv){const st=[[-6,-3,3,6],[-6,-3,-2,2,3,6],[-3,-2,-1,1,2,3]][lv-1],ans=Math.random()*st.length|0;
@@ -70,7 +70,7 @@ const MS={strings:['../media/mock-violin1.mp3',2],ambient:['../media/game-music.
 let els={},ac=null,inp,out,ana,gA,gB,tA,tB,mA,mB,bufNode=null,srcG=null,src='strings',playing=false,listen='B',N=[],R=null,vol=.8,matchOn=false,bufs={};
 // K-weighting (ITU-R BS.1770-4): high shelf +4 dB @ 1681 Hz, high-pass 38 Hz, both ahead of the loudness meter
 const kw=(ac,node)=>{const s=bq(ac,'highshelf',1681.97,3.9998,null),h=bq(ac,'highpass',38.135,null,.5003);node.connect(s);s.connect(h);return h};
-function ensure(){A.init();ac=A.ctx;if(out)return;inp=ac.createGain();out=ac.createGain();out.gain.value=vol;ana=ac.createAnalyser();ana.fftSize=8192;ana.smoothingTimeConstant=.8;out.connect(ana);ana.connect(ac.destination);
+function ensure(){A.init();ac=A.ctx;if(out)return;inp=ac.createGain();out=ac.createGain();out.gain.value=vol;const lim=ac.createDynamicsCompressor();lim.threshold.value=-2;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.08;ana=ac.createAnalyser();ana.fftSize=8192;ana.smoothingTimeConstant=.8;out.connect(lim);lim.connect(ana);ana.connect(ac.destination);
 const mk=()=>{const t=ac.createGain(),g=ac.createGain(),m=ac.createAnalyser();m.fftSize=4096;kw(ac,t).connect(m);t.connect(g);g.connect(out);return[t,g,m]};[tA,gA,mA]=mk();[tB,gB,mB]=mk();
 const sr=ac.sampleRate;{const n=sr*6,b=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;for(let i=0;i<n;i++){const w=Math.random()*2-1;b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.06;b6=w*.115926}}bufs.noise=b}
 {const L=2.4,n=Math.round(sr*L),b=ac.createBuffer(2,n,sr),D=[b.getChannelData(0),b.getChannelData(1)],add=(t0,f)=>{const s=Math.round(t0*sr);for(let i=0;i<sr*.6&&s+i<n;i++){const v=f(i/sr);D[0][s+i]+=v;D[1][s+i]+=v}};
@@ -83,7 +83,7 @@ function stopOthers(){A.setLoop(false);const m=G.media;if(m&&m.sets)for(const id
 function setPlay(on){ensure();if(on){stopOthers();ac.resume();startSrc()}else stopSrc();playing=on;ui.play()}
 function setListen(w){listen=w;if(!ac)return;const t=ac.currentTime;gA.gain.setTargetAtTime(w==='A'?1:0,t,.012);gB.gain.setTargetAtTime(w==='B'?1:0,t,.012);ui.ab()}
 let ra=0,rb=0;
-function wireRound(){ensure();N.forEach(n=>{try{n.disconnect()}catch(e){}});N=[];try{inp.disconnect()}catch(e){}for(const t of[tA,tB]){t.gain.cancelScheduledValues(0);t.gain.setValueAtTime(1,ac.currentTime)}ra=rb=0;R.wire(ac,inp,tA,tB,N);matchOn=!!R.match;setListen(R.kind==='ab'?'A':'B')}
+function wireRound(){ensure();N.forEach(n=>{try{n.disconnect()}catch(e){}});N=[];try{inp.disconnect()}catch(e){}for(const t of[tA,tB]){t.gain.cancelScheduledValues(0);t.gain.setValueAtTime(1,ac.currentTime)}ra=rb=0;inp.gain.value=ses&&ses.game.cat==='EQ'?.35:1;R.wire(ac,inp,tA,tB,N);matchOn=!!R.match;setListen(R.kind==='ab'?'A':'B')}
 // K-weighted loudness match (slow, so it never pumps): B follows A
 const tb=new Float32Array(4096),msq=an=>{an.getFloatTimeDomainData(tb);let s=0;for(let i=0;i<tb.length;i++)s+=tb[i]*tb[i];return s/tb.length};
 G.ticks.push(dt=>{if(!ac||!playing||!matchOn)return;const x=msq(mA),y=msq(mB)/Math.max(1e-6,tB.gain.value*tB.gain.value),k=Math.min(1,dt*1.2);ra+=(x-ra)*k;rb+=(y-rb)*k;if(ra>1e-8&&rb>1e-8)tB.gain.setTargetAtTime(Math.max(.2,Math.min(5,Math.sqrt(ra/rb))),ac.currentTime,.3)});
@@ -126,7 +126,7 @@ root.innerHTML=`<div class="tr-head"><span class="mono">CREATIVE · EAR TRAINING
 <h2 class="tr-h">BADGES</h2><div class="tr-badges">${BADGES.map(([id,n,how])=>{const on=badgeOn(id);return`<div class="tr-badge${on?' on':''}" title="${how}">${svg(GI[id].icon,34)}<b>${n}</b><span>${on?'획득':how}</span></div>`}).join('')}</div>
 <h2 class="tr-h">EAR TRAINING GAMES</h2><div class="tr-games">${GAMES.map(g=>`<div class="box tr-card${g.adaptive?' tr-test':''}">${svg(g.icon)}<div><b>${g.name}</b><span class="mono">${g.adaptive?'THRESHOLD TEST · ':''}${CATN[g.cat]}</span><p>${g.ko}</p><span class="tr-best">${g.adaptive?'BEST '+(bj!=null?bj.toFixed(2)+' dB':'—')+' · 2-DOWN/1-UP':'BEST '+(S.best[g.id]!=null?S.best[g.id]+'%':'—')+' · LV '+lvOf(g.id)}</span></div><button class="btn" data-tr="play" data-id="${g.id}">ENTER →</button></div>`).join('')}</div>
 <details class="notes"><summary>METHOD · 공신력 근거</summary>
-<ul class="tr-method"><li><b>주파수</b> ISO 266 우선 주파수(옥타브·1/3 옥타브 중심, IEC 61260-1 대역)를 정답 보기로 써요.</li>
+<ul class="tr-method"><li><b>세기</b> EQ 게임의 부스트·컷은 LV1 기준 +18 dB / −30 dB로 크게 걸고, 헤드룸을 확보한 뒤 출력에 안전 리미터(−2 dBFS)를 둬서 클리핑 없이 들리게 해요. 스펙트럼은 답을 고른 뒤에만 열려 귀로만 판단하게 해요.</li><li><b>주파수</b> ISO 266 우선 주파수(옥타브·1/3 옥타브 중심, IEC 61260-1 대역)를 정답 보기로 써요.</li>
 <li><b>음량 맞춤</b> A/B 비교 게임은 ITU-R BS.1770-4 K-가중치로 측정한 라우드니스를 실시간으로 맞춰, “더 큰 쪽”이 단서가 되지 않게 해요.</li>
 <li><b>블라인드</b> 처리음이 A인지 B인지, 정답이 몇 번 보기인지 매 문제 무작위예요(ITU-R BS.1116-3, ABX 청취 시험의 원칙).</li>
 <li><b>역치 측정</b> LEVEL JND는 2-down/1-up 적응형 계단법(Levitt, 1971)으로 70.7% 정답 지점을 찾고, 마지막 6번 반전값의 평균을 역치로 보고해요. 숙련된 청취자의 광대역 음량 변별은 보통 0.5–1 dB 수준이에요.</li>
@@ -173,10 +173,10 @@ if(e.code==='Space'){e.preventDefault();setPlay(!playing);return}if(e.code==='Ke
 if(e.code==='Enter'&&ses.answered){e.preventDefault();proceed();return}const d=/^Digit([1-9])$|^Numpad([1-9])$/.exec(e.code);if(d){const i=+(d[1]||d[2])-1;if(R&&i<R.opts.length){e.preventDefault();answer(i)}}});
 // spectrum (1/6-octave bands) + the round's filter response once answered + live loudness gap for matched games
 G.ticks.push(()=>{if(!rta||!rta.offsetParent||G.view!=='2d')return;const dpr=Math.min(devicePixelRatio||1,2),w=rta.clientWidth,h=rta.clientHeight;if(rta.width!==Math.round(w*dpr)){rta.width=Math.round(w*dpr);rta.height=Math.round(h*dpr)}
-const x=rta.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.fillStyle='#0b0b0b';x.fillRect(0,0,w,h);const fx=f=>Math.log(f/20)/Math.log(1000)*w;
+const x=rta.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.fillStyle='#0b0b0b';x.fillRect(0,0,w,h);if(ses&&!ses.answered){x.fillStyle='#777';x.font='600 12px ui-monospace,monospace';x.textAlign='center';x.fillText(playing?'귀로만 판단하세요 · 답을 고르면 스펙트럼과 EQ 곡선이 열려요':'PRESS PLAY',w/2,h/2+4);x.textAlign='left';x.fillStyle=playing?'#fff':'#777';x.fillText(playing?(listen==='A'?'A':'B')+' · '+SRCN[src]:'',8,14);return}const fx=f=>Math.log(f/20)/Math.log(1000)*w;
 x.strokeStyle='#2a2a2a';x.lineWidth=1;x.fillStyle='#777';x.font='600 10px ui-monospace,monospace';for(const f of[31.5,63,125,250,500,1000,2000,4000,8000,16000]){const X=fx(f)|0;x.beginPath();x.moveTo(X+.5,0);x.lineTo(X+.5,h);x.stroke();x.fillText(f>=1000?f/1000+'k':f,X+3,h-4)}
 if(ac&&playing){const n=ana.frequencyBinCount,d=new Float32Array(n);ana.getFloatFrequencyData(d);const bw=ac.sampleRate/2/n;x.fillStyle='#f2f2f2';for(let k=0;k<60;k++){const f0=20*Math.pow(2,k/6),f1=f0*Math.pow(2,1/6);let s=0,c=0;for(let i=Math.max(1,Math.floor(f0/bw));i<=Math.min(n-1,Math.ceil(f1/bw));i++){s+=Math.pow(10,d[i]/10);c++}const db=c?10*Math.log10(s):-120,v=Math.max(0,Math.min(1,(db+90)/80)),X0=fx(f0),X1=fx(f1);x.fillRect(X0+1,h-16-v*(h-26),Math.max(1,X1-X0-2),v*(h-26))}}
-if(ses&&ses.answered&&R&&R.curve){const M=200,fr=new Float32Array(M),mg=new Float32Array(M),ph=new Float32Array(M);for(let i=0;i<M;i++)fr[i]=20*Math.pow(1000,i/(M-1));R.curve[0].getFrequencyResponse(fr,mg,ph);const y=db=>h/2-db/24*(h/2-14);
+if(ses&&ses.answered&&R&&R.curve){const M=200,fr=new Float32Array(M),mg=new Float32Array(M),ph=new Float32Array(M);for(let i=0;i<M;i++)fr[i]=20*Math.pow(1000,i/(M-1));R.curve[0].getFrequencyResponse(fr,mg,ph);const y=db=>h/2-db/36*(h/2-14);
 x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();for(let i=0;i<M;i++){const X=i/(M-1)*w,Y=y(20*Math.log10(Math.max(1e-4,mg[i])));i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke();x.strokeStyle='#555';x.setLineDash([3,4]);x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();x.setLineDash([])}
 x.fillStyle=playing?'#fff':'#777';x.fillText(playing?(listen==='A'?'A':'B')+' · '+SRCN[src]:'PRESS PLAY',8,14);
 const lf=F('lufs');if(lf){const gp=matchOn&&playing?lufsGap():null;lf.textContent=matchOn?(gp!=null?'K-WEIGHTED Δ '+gp.toFixed(1)+' dB':'K-WEIGHTED MATCH'):''}});
